@@ -1,0 +1,345 @@
+---
+title: "Assignment Template"
+output:
+  html_document: default
+  pdf_document: default
+date: "2024-11-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*The following is a template .rmd RMarkdown file for you to use for your homework submission.*
+
+*Please Knit your .rmd to a PDF format or HTML and submit that with no identifiers like your name.*
+
+*To create a PDF, first install tinytex and load the package. Then press the Knit arrow and select "Knit to PDF".*
+
+## QUESTION 01: Data Visualisation for Science Communication
+
+*Create a figure using the Palmer Penguin dataset that is correct but badly communicates the data. **Do not make a boxplot**.*
+
+*Use the following references to guide you:*
+
+-   [*https://www.nature.com/articles/533452a*](https://www.nature.com/articles/533452a){.uri}
+-   [*https://elifesciences.org/articles/16800*](https://elifesciences.org/articles/16800){.uri}
+
+*Note: Focus on visual elements rather than writing misleading text on it.*
+
+### a) Provide your figure here:
+
+```{r bad figure code, echo=FALSE}
+### Loading the packages
+library(tidyverse)
+library(palmerpenguins)
+library(here)
+library(janitor)
+here::here()
+
+### loading the funcitons file - called Cleaning.R
+source(here("functions", "cleaning.R"))
+
+### save the raw data so it doesn't keep getting changed
+write_csv(penguins_raw, here("data", "penguins_raw.csv"))
+
+### cleaning funciton to ensure clean data before the graph
+penguins_clean <- penguins_raw %>%
+  clean_column_names() %>%
+  remove_columns(c("comments", "delta")) %>%
+  shorten_species() %>%
+  remove_empty_columns_rows()
+
+### saving the clean data 
+write_csv(penguins_clean, here("data", "penguins_clean.csv"))
+
+### load packages for bad graph
+library(plotly)
+
+### remove na's in the data
+mass_and_culmenlength <- penguins_clean %>%
+    select(species, body_mass_g, culmen_length_mm) %>%
+    remove_NA()
+
+
+penguins_clean$species <- as.factor(penguins_clean$species)
+
+fig <- plot_ly(mass_and_culmenlength, x = ~body_mass_g, y = ~culmen_length_mm, z = ~species, color = ~species, colors = c('#001', '#333', '#444'), mode = 'markers', type = 'scatter3d')
+fig <- fig %>% layout(title = 'Bodyweight vs Culmen Length',
+                    scene = list(xaxis = list(title = 'body mass g'),
+                     yaxis = list(title = 'culmen length mm'),
+                     xaxis = list(title = 'body mass g')))
+
+fig
+# There is no need to provide the code for your bad figure, just use echo=FALSE so the code is hidden. Make sure your figure is visible after you knit it. 
+
+```
+
+### b) Write about how your design choices mislead the reader about the underlying data (100-300 words).
+
+##### the graph is misleading because...
+
+------------------------------------------------------------------------
+
+## QUESTION 2: Data Pipeline
+
+*Write a data analysis pipeline in your .rmd RMarkdown file. You should be aiming to write a clear explanation of the steps as well as clear code.*
+
+*Your code should include the steps practiced in the lab session:*
+
+-   *Load the data*
+
+-   *Appropriately clean the data*
+
+-   *Create an Exploratory Figure (**not a boxplot**)*
+
+-   *Save the figure*
+
+-   ***New**: Run a statistical test*
+
+-   ***New**: Create a Results Figure*
+
+-   *Save the figure*
+
+*An exploratory figure shows raw data, such as the distribution of the data. A results figure demonstrates the stats method chosen, and includes the results of the stats test or model.*
+
+*Between your code, communicate clearly what you are doing and why.*
+
+*Your text should include:*
+
+-   *Introduction*
+
+-   *Hypothesis*
+
+-   *Stats Method*
+
+-   *Results*
+
+-   *Discussion*
+
+-   *Conclusion*
+
+*You will be marked on the following:*
+
+### a) Your code for readability and functionality
+
+### b) Your figures for communication
+
+### c) Your text communication of your analysis
+
+*Below is a template you can use.*
+
+------------------------------------------------------------------------
+
+### Introduction
+
+```{r Data Exploration}
+### loading the packages necessary for this exercise
+library(tidyverse)
+library(palmerpenguins)
+library(here)
+library(janitor)
+
+
+### Use this if you want to restore all the packages I used:
+### renv::restore()
+
+### loading the funcitons file - called Cleaning.R
+source(here("functions", "cleaning.R"))
+
+### save the raw data so it doesn't get edited
+write_csv(penguins_raw, here("data", "penguins_raw.csv"))
+
+### cleaning pipeline to remove empty rows and columns, outputs we do not want, and clean up the names to make them more readable
+### this is done using a document of specific cleaning functions called cleaning.R which you can find in the functions file
+penguins_clean <- penguins_raw %>%
+  clean_column_names() %>%
+  remove_columns(c("comments", "delta")) %>%
+  shorten_species() %>%
+  remove_empty_columns_rows()
+
+### loading the funcitons file - called Cleaning.R
+source(here("functions", "cleaning.R"))
+
+### saving the clean data 
+write_csv(penguins_clean, here("data", "penguins_clean.csv"))
+
+### load packages for bad graph
+library(plotly)
+
+### remove missing values in the data
+### and subsetting the data so we only look at species, body mass and culmen length, the three variables we will be examining
+mass_and_culmenlength <- penguins_clean %>%
+    select(species, body_mass_g, culmen_length_mm) %>%
+    remove_NA()
+
+### Make sure your code prints
+colnames(mass_and_culmenlength)
+
+### Making the Scatterplot Graph
+### First Creating a vector for the colours corresponding to the species
+### I chose the palmer penguin colours to keep it simple and memorable
+species_colours <- c("Adelie" = "darkorange",
+                     "Chinstrap" = "purple",
+                     "Gentoo" = "cyan")
+### Now for the ggplot, where I have labelled my axis, made a corresponding figure legend, added my colour vector, and made it easier to read
+ggplot(mass_and_culmenlength, 
+       aes(x=body_mass_g, 
+           y=culmen_length_mm, 
+           shape=species, 
+           color=species)) +
+  scale_color_manual(
+    values = species_colours) +
+  labs(title = "Body Mass vs Culmen Length", x = "Body Mass (g)", y = "Culmen Length (mm)") +
+  theme_bw() +
+  geom_point()
+```
+
+### Hypothesis
+
+### Statistical Methods
+
+```{r Statistics}
+### Splitting the data into the 3 species (as different species may have different effects on correlation)
+adelie_penguins <- mass_and_culmenlength %>%
+  filter(species == "Adelie")
+
+gentoo_penguins <- mass_and_culmenlength %>%
+  filter(species == "Gentoo")
+
+chinstrap_penguins <- mass_and_culmenlength %>%
+  filter(species =="Chinstrap")
+
+### Next for the Pearson's Correlation test
+### This is to calculate the correlation, the t-value, and the p-value for each species
+### Adelie
+adelieresults <- adelie_penguins %>%
+  summarise(
+    correlation = cor(culmen_length_mm, body_mass_g, use = "complete.obs", method = "pearson"),
+    p_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$p.value,
+    t_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$statistic
+    )
+### adelie results output
+adelieresults
+
+### gentoo
+gentooresults <- gentoo_penguins %>%
+  summarise(
+    correlation = cor(culmen_length_mm, body_mass_g, use = "complete.obs", method = "pearson"),
+    p_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$p.value,
+    t_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$statistic
+    )
+### gentoo results output
+gentooresults
+
+### chinstrap
+chinstrapresults <- chinstrap_penguins %>%
+  summarise(
+    correlation = cor(culmen_length_mm, body_mass_g, use = "complete.obs", method = "pearson"),
+    p_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$p.value,
+    t_value = cor.test(culmen_length_mm, body_mass_g, method = "pearson")$statistic
+    )
+### chinstrap results output
+chinstrapresults
+
+### Next for the linear regression model for each species
+adelieregression <- lm(culmen_length_mm ~ body_mass_g, data = adelie_penguins)
+summary(adelieregression)
+
+gentooregression <- lm(culmen_length_mm ~ body_mass_g, data = gentoo_penguins)
+summary(gentooregression)
+
+chinstrapregression <- lm(culmen_length_mm ~ body_mass_g, data = chinstrap_penguins)
+summary(chinstrapregression)
+
+```
+
+### Results & Discussion
+
+```{r Plotting Results}
+
+
+### The results graph - I have made a scatterplot similar to that of the exploratory graph, but added regression lines with CI for each species
+### I have also added a figure legend with the correlations calculated earlier
+### First I labelled a summarised version of the correlation test for the figure legend
+stats <- mass_and_culmenlength %>%
+  group_by(species) %>%
+  summarise(
+    correlation = cor(culmen_length_mm, body_mass_g, use = "complete.obs", method = "pearson")
+  ) %>%
+  mutate(
+    legend_label = paste0(species, " (r = ", round(correlation, 2), ")")
+  )
+### I set it as a label so it can be added more easily
+custom_labels <- setNames(stats$legend_label, stats$species)
+
+### Now it all goes together in the results plot
+### Added a linear regression line with confidence intervals
+ggplot(mass_and_culmenlength, 
+       aes(x=body_mass_g, 
+           y=culmen_length_mm, 
+           color=species)) +
+  scale_color_manual(
+    values = species_colours) +
+  labs(title = "Body Mass vs Culmen Size, linear regression", x = "Body Mass (g)", y = "Culmen Length (mm)") +
+  theme_bw() +
+  geom_point(aes(shape=species)) +
+  geom_smooth(method = lm, se = TRUE, alpha = 0.4) +
+      scale_color_manual(values = c(species_colours),
+                     labels = custom_labels) +
+   guides(color = guide_legend(title = "Correlation",override.aes = list(fill = NA, colour = NA)))
+
+### Now for the results tables, showing the regression results 
+### First load the packages
+library(gtsummary)
+library(stargazer)
+
+### next a stargazer table for each of the regressions
+stargazer(chinstrapregression, gentooregression, adelieregression, 
+          type = 'text',
+          column.labels = c("Chintrap", "Gentoo", "Adelie"),
+          title = 'Regression Results by Species' )
+```
+
+### Conclusion
+
+------------------------------------------------------------------------
+
+## QUESTION 3: Open Science
+
+### a) GitHub
+
+*Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
+
+*GitHub link:*
+
+*You will be marked on your repo organisation and readability.*
+
+### b) Share your repo with a partner, download, and try to run their data pipeline.
+
+*Partner's GitHub link:*
+
+*You **must** provide this so I can verify there is no plagiarism between you and your partner.*
+
+### c) Reflect on your experience running their code. (300-500 words)
+
+-   *What elements of your partner's code helped you to understand and run their data pipeline?*
+
+-   *Did it run? Did you need to fix anything?*
+
+-   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
+
+-   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
+
+### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
+
+-   *What improvements did they suggest, and do you agree?*
+
+-   *What did you learn about writing code for other people?*
+
+### e) What are the main barriers for scientists to share their data and code, and what could be done to overcome them? (500-700 words)
+
+-   Maitner et al. Code sharing increases citations, but remains uncommon. <https://doi.org/10.21203/rs.3.rs-3222221/v1>
+-   Trisovic et al. A large-scale study on research code quality and execution. <https://rdcu.be/dZB7x>
+-   A Rock-Star Researcher Spun a Web of Lies—and Nearly Got Away with It. <https://thewalrus.ca/a-rock-star-researcher-spun-a-web-of-lies-and-nearly-got-away-with-it/>
+-   Gomes et al. Why don't we share data and code? Perceived barriers and benefits to public archiving practices <https://doi.org/10.1098/rspb.2022.1113>

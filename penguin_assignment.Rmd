@@ -193,6 +193,27 @@ ggplot(mass_and_culmenlength,
   labs(title = "Body Mass vs Culmen Length", x = "Body Mass (g)", y = "Culmen Length (mm)") +
   theme_bw() +
   geom_point()
+
+### loading the funcitons file - called plotting.R
+source(here("functions", "plotting.R"))
+
+### loading the plot, using the things present in the plotting.R file
+exploratory_plot(mass_and_culmenlength, species_colours)
+
+### saving the figure 
+library(ragg)
+library(svglite)
+
+exploratary_scatterplot <- exploratory_plot(mass_and_culmenlength, species_colours)
+
+agg_png("figures/exploratory_scatterplot_default.png", 
+        width = 20, 
+        height = 20, 
+        units = "cm", 
+        res = 300, 
+        scaling = 1)
+print(exploratary_scatterplot)
+dev.off()
 ```
 
 ### Hypothesis
@@ -289,6 +310,26 @@ ggplot(mass_and_culmenlength,
                      labels = custom_labels) +
    guides(color = guide_legend(title = "Correlation",override.aes = list(fill = NA, colour = NA)))
 
+### Now to make it into a function, and save the graph
+### loading the funcitons file - called plotting.R
+source(here("functions", "plotting.R"))
+
+### loading the plot, using the things present in the plotting.R file
+results_plot(mass_and_culmenlength, species_colours, custom_labels)
+
+### Now to save the graph
+results_scatterplot <- results_plot(mass_and_culmenlength, species_colours, custom_labels)
+
+agg_png("figures/results_scatterplot_default.png", 
+        width = 20, 
+        height = 20, 
+        units = "cm", 
+        res = 300, 
+        scaling = 1)
+print(results_scatterplot)
+dev.off()
+
+
 ### Now for the results tables, showing the regression results 
 ### First load the packages
 library(gtsummary)
@@ -299,6 +340,7 @@ stargazer(chinstrapregression, gentooregression, adelieregression,
           type = 'text',
           column.labels = c("Chintrap", "Gentoo", "Adelie"),
           title = 'Regression Results by Species' )
+
 ```
 
 ### Conclusion

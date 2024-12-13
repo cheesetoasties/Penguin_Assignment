@@ -1,5 +1,5 @@
 ---
-title: "Assignment Template"
+title: "Penguin Reproducible Figures Assignment"
 output:
   html_document: default
   pdf_document: default
@@ -10,32 +10,17 @@ date: "2024-11-08"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-*The following is a template .rmd RMarkdown file for you to use for your homework submission.*
-
-*Please Knit your .rmd to a PDF format or HTML and submit that with no identifiers like your name.*
-
-*To create a PDF, first install tinytex and load the package. Then press the Knit arrow and select "Knit to PDF".*
-
 ## QUESTION 01: Data Visualisation for Science Communication
-
-*Create a figure using the Palmer Penguin dataset that is correct but badly communicates the data. **Do not make a boxplot**.*
-
-*Use the following references to guide you:*
-
--   [*https://www.nature.com/articles/533452a*](https://www.nature.com/articles/533452a){.uri}
--   [*https://elifesciences.org/articles/16800*](https://elifesciences.org/articles/16800){.uri}
-
-*Note: Focus on visual elements rather than writing misleading text on it.*
 
 ### a) Provide your figure here:
 
-```{r bad figure code, echo=FALSE}
+```{r bad figure code, echo=FALSE, message=FALSE}
 ### Loading the packages
 library(tidyverse)
 library(palmerpenguins)
 library(here)
 library(janitor)
-here::here()
+
 
 ### loading the funcitons file - called Cleaning.R
 source(here("functions", "cleaning.R"))
@@ -77,61 +62,25 @@ fig
 
 ### b) Write about how your design choices mislead the reader about the underlying data (100-300 words).
 
-##### the graph is misleading because...
+##### This graph is misleading in the most part due to its aesthetics. The points being large and mostly opaque makes it look as if they cover a larger area of the graph than they do, and makes the general trends a lot less visible and a lot more blob-like. This will mislead the reader into believing that there is no trend in the data set, therefore misinterpreting the graph. In addition, the plot is in black and white, with the points being varying shades of grey, making it difficult to distinguish between the individual species, adding another layer of confusion when interpreting the graph.
+
+##### Having axis that don’t start at 0 can also be misleading[Glen, 2021; Grootendorst, 2021], as it can guide the reader to believe that the differences between beak length or body mass between species are much larger than they are, and that species span a much larger range of sizes. However, in this case, it also centres the data by essentially zooming in, and allows you to see more closely the differences between species and between individual measurements within a species, and so can be helpful in this regard.
+
+##### Although 3d plots can be useful in some cases, in this instance it simply convolutes the data representation, making it more difficult to read and interpret [Grootendorst, 2021]. Having it set at specific angles can distort the way the reader views the graph, seeing the measurements disproportionately to the scale, and therefore leading to them misreading and misinterpreting the data.
+
+#### References:
+
+##### Glen, S. (2021). Misleading Graphs: Real Life Examples. [online] Statistics How To. Available at: <https://www.statisticshowto.com/probability-and-statistics/descriptive-statistics/misleading-graphs/>.
+
+##### Grootendorst, M. (2021). Misleading Graphs. [online] Maarten Grootendorst. Available at: <https://www.maartengrootendorst.com/blog/misleading/>.
 
 ------------------------------------------------------------------------
 
 ## QUESTION 2: Data Pipeline
 
-*Write a data analysis pipeline in your .rmd RMarkdown file. You should be aiming to write a clear explanation of the steps as well as clear code.*
-
-*Your code should include the steps practiced in the lab session:*
-
--   *Load the data*
-
--   *Appropriately clean the data*
-
--   *Create an Exploratory Figure (**not a boxplot**)*
-
--   *Save the figure*
-
--   ***New**: Run a statistical test*
-
--   ***New**: Create a Results Figure*
-
--   *Save the figure*
-
-*An exploratory figure shows raw data, such as the distribution of the data. A results figure demonstrates the stats method chosen, and includes the results of the stats test or model.*
-
-*Between your code, communicate clearly what you are doing and why.*
-
-*Your text should include:*
-
--   *Introduction*
-
--   *Hypothesis*
-
--   *Stats Method*
-
--   *Results*
-
--   *Discussion*
-
--   *Conclusion*
-
-*You will be marked on the following:*
-
-### a) Your code for readability and functionality
-
-### b) Your figures for communication
-
-### c) Your text communication of your analysis
-
-*Below is a template you can use.*
-
-------------------------------------------------------------------------
-
 ### Introduction
+
+##### Using the publicly available data frame ‘PalmerPenguins’, I will be carrying out an analysis of the penguins, looking to see if body weight of different species of penguins impacts the length of their beaks. The beaks of penguins have adapted to be specialised to their dietary needs, and the size of penguins can sometimes demonstrate their prey of choice. Penguins that eat more fish tend to have longer beaks, and tend to be bigger, and those that eat krill often have shorter beaks [Seaworld.org, 2024]. In addition, the features of penguins tend to scale proportional to their size, and this could include beaks. Therefore, I am testing to see if the body weight of the penguin leads to differences in beak size. First, I will create a scatterplot to explore the visible trends in the data. Then I will carry out statistical tests including a correlation test and a linear regression to test for correlation and interaction between body mass and culmen length. Then I will produce a results figure to summarise my results.
 
 ```{r Data Exploration}
 ### loading the packages necessary for this exercise
@@ -164,9 +113,6 @@ source(here("functions", "cleaning.R"))
 ### saving the clean data 
 write_csv(penguins_clean, here("data", "penguins_clean.csv"))
 
-### load packages for bad graph
-library(plotly)
-
 ### remove missing values in the data
 ### and subsetting the data so we only look at species, body mass and culmen length, the three variables we will be examining
 mass_and_culmenlength <- penguins_clean %>%
@@ -197,8 +143,8 @@ ggplot(mass_and_culmenlength,
 ### loading the funcitons file - called plotting.R
 source(here("functions", "plotting.R"))
 
-### loading the plot, using the things present in the plotting.R file
-exploratory_plot(mass_and_culmenlength, species_colours)
+### from now on, can load the plot using the things present in the plotting.R file, using this:
+# exploratory_plot(mass_and_culmenlength, species_colours)
 
 ### saving the figure 
 library(ragg)
@@ -218,7 +164,13 @@ dev.off()
 
 ### Hypothesis
 
+##### The null hypothesis is that there is no correlation between body mass and culmen length (and that culmen length is not dependent on body mass)
+
+##### The alternative hypothesis is that there is correlation between body mass and culmen length (and that culmen length is dependent on body mass)
+
 ### Statistical Methods
+
+##### The data was split into three data sets, for the three species – “Chinstrap”, “Gentoo” and “Adelie”. Then a Pearson’s Correlation test was carried out on each in order to test for the strength and direction of the relationship between culmen length (in mm) and body mass (in g) in each species, and see if a correlation was significant. I then ran a linear regression (ŷ = b0 + b1x) [Kiernan, 2013, pp.150–158] in order to test for interaction between the two predictor variables, specifically if the culmen length was dependent on body mass. Prior to the analysis, the data was checked visually through the scatterplot for linearity. This data was then presented on one scatterplot, with a linear regression line with confidence intervals for each species, and the correlations in a figure legend. A table was produced showing the results of all three linear regressions, including the key results such as the significance, the R2, standard error etc.
 
 ```{r Statistics}
 ### Splitting the data into the 3 species (as different species may have different effects on correlation)
@@ -277,7 +229,15 @@ summary(chinstrapregression)
 
 ### Results & Discussion
 
-```{r Plotting Results}
+##### The results of the correlation test demonstrated a strong positive correlation between the penguin mass (g) and culmen length (mm), with all the correlations being statistically significant (\<0.001\*). The strongest positive correlation (0.669) was seen in the Gentoo penguin, although the others both had strong positive correlations – with Adelie and chinstrap having correlations of 0.549 and 0.514 respectively. This aligns with the hypothesis that there is a correlation, and additionally, as body mass increases, so does culmen length.
+
+##### The results of my linear regression analysis were also in line with the hypothesis. There was strong statistical significance in all three species that body mass is a predictor of culmen length, with p \< 0.001. The relationship was positive, the estimate calculated was that for every gram increase in body mass, culmen length would increase between 0.0032 – 0.0045mm, a tiny amount, but in proportion to the size of a penguin, a notable difference.
+
+##### However, the model only explained between 26% (chinstrap penguins) to 45% (Gentoo penguins) of the variation in culmen length, so there must be other factors that are causing differences in culmen size. One such factor could be sexual dimorphisms, as male penguins often have larger culmens compared to female penguins. Sexual dimorphisms in culmen length are more prominent in the Chinstrap species compared to Gentoo and Adelie, and sexual dimorphisms in body mass smaller (3), which could explain why less of the variation in culmen length in chinstraps was explained by body mass than the other species. In a future analysis, sexual dimorphism could be accounted for in specific ways, either by separating out the data into sex and species, rather than just species, and running the linear regression this way, or putting sex as a predictor in the linear regression.
+
+##### These results showed that culmen length is partly predicted by body mass, and as body mass increases, culmen length increases. This could be because, as with many species, many traits tend to increase in size proportional to one another, such as the flippers, feet etc. There could also be other selective factors involved that make bigger beaks more advantageous to bigger penguins, as penguins use them for a variety of functions, such as hunting, preening feathers, and defence against predators or other penguins [www.pinguins.info, n.d.].
+
+```{r Plotting Results, message=FALSE}
 
 
 ### The results graph - I have made a scatterplot similar to that of the exploratory graph, but added regression lines with CI for each species
@@ -314,8 +274,8 @@ ggplot(mass_and_culmenlength,
 ### loading the funcitons file - called plotting.R
 source(here("functions", "plotting.R"))
 
-### loading the plot, using the things present in the plotting.R file
-results_plot(mass_and_culmenlength, species_colours, custom_labels)
+### From now on, can load the plot, using the things present in the plotting.R file, with this:
+# results_plot(mass_and_culmenlength, species_colours, custom_labels)
 
 ### Now to save the graph
 results_scatterplot <- results_plot(mass_and_culmenlength, species_colours, custom_labels)
@@ -345,43 +305,52 @@ stargazer(chinstrapregression, gentooregression, adelieregression,
 
 ### Conclusion
 
-------------------------------------------------------------------------
+##### These results showed that culmen length is partly predicted by body mass, and as body mass increases, culmen length increases. This could be because, as with many species, many traits tend to increase in size proportional to one another, such as the flippers, feet etc. There could also be other selective factors involved that make bigger beaks more advantageous to bigger penguins, as penguins use them for a variety of functions, such as hunting, preening feathers, and defence against predators or other penguins [www.pinguins.info, n.d.].
+
+### References
+
+##### Gorman, K.B., Williams, T.D. and Fraser, W.R. (2014). Ecological Sexual Dimorphism and Environmental Variability within a Community of Antarctic Penguins (Genus Pygoscelis). PLoS ONE, 9(3), p.e90081. <doi:https://doi.org/10.1371/journal.pone.0090081>.
+
+##### Kiernan, D. (2013). Natural Resources Biometrics. [online] Open SUNY Textbooks, pp.150–158. Available at: <http://textbooks.opensuny.org/natural-resources-biometrics/>.
+
+##### Seaworld.org. (2024). All About Penguins - Physical Characteristics \| United Parks & Resorts. [online] Available at: <https://seaworld.org/animals/all-about/penguin/physical-characteristics/>.
+
+##### www.pinguins.info. (n.d.). body language - aggressive behaviour. [online] Available at: <https://www.pinguins.info/Engels/Taal_agres_eng.html>.
 
 ## QUESTION 3: Open Science
 
 ### a) GitHub
 
-*Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
-
-*GitHub link:*
-
-*You will be marked on your repo organisation and readability.*
+*GitHub link:* <https://github.com/cheesetoasties/Penguin_Assignment.git>
 
 ### b) Share your repo with a partner, download, and try to run their data pipeline.
 
-*Partner's GitHub link:*
-
-*You **must** provide this so I can verify there is no plagiarism between you and your partner.*
+*Partner's GitHub link:* <https://github.com/BatWeek/PenguinProjectAssessment.git>
 
 ### c) Reflect on your experience running their code. (300-500 words)
 
 -   *What elements of your partner's code helped you to understand and run their data pipeline?*
 
+    My partner’s code contained lots of hashed out explanations of each step, which made understanding the exact progression of the code very easy. They included a very neat cleaning pipeline in their function file in order to clean the data. This included making the headings and species names more readable, and removing specific columns, making the entire data pipeline more readable, both to humans and to computers. The function being stored in a separate function file also meant that the code was clean and easy to read (and this could be re-used in a reproduceable way). They also made a second function in order to save the figures they produced as svg files (giving high resolution), which made the code cleaner, and the figure easier to access and understand. The data frames, plots and statistical tests all had clear names, so it was easy to identify and understand what data each step included and what outputs were being produced or used. In addition, the graphs were well labelled so any data analysis and exploration results could be clearly followed and understood, with well sized axis, and titles for each graph. Colour coordination according to the colour of the penguins is a nice touch, making it reflective of the original data source in a readable way. The final plotted results were all put into one output using the patchwork package, including scatterplots and a statistical analysis table, making it a unified set of results that was easy to follow. The creation of the data table was very simple and reproducible and was displayed visually using “tableGrob” so it was easy to comprehend.
+
 -   *Did it run? Did you need to fix anything?*
+
+    Thanks to an updated renv lock file and a well laid out piece of code, it ran very well. A couple of packages were incompatible with my old version of R, but after a quick update this was no longer a problem. I did not have to fix anything.
 
 -   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
 
+    They could put the code for their figures into flexible functions, in their function document, meaning they would be easier to reproduce and reuse – as the blocks of code can be version controlled. Putting code for methods for figures or stats into a function also makes it easier for a reader to quickly scan the function file and understand what is going on. In addition, they could change the names of their scatterplots from ‘(species)plot’ to ‘(species)scatterplot’ just to avoid any confusion and clarify the graph type, as there were multiple types of graph.
+
 -   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
 
-### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
+    I think it would be easy because they have made it very reproducible, the code is clean and easy to understand, and therefore easy to adjust. The project folder is also nicely laid out, with files for the data, figures and functions. The code for the graphs is very neat and readable, with no repetition or overwriting. In addition, the code specifying shape, colour, binwidth, axis titles etc in the figures was all present and easy to adjust.
+
+    \### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
 
 -   *What improvements did they suggest, and do you agree?*
 
+    Some of the main improvements were aesthetics based. I was advised that some of my code was too blocked together and could be improved through extra white space between chunks of code and comments, which I agree with. To make it more readable I should consistently have a white space before each comment. Another aesthetic based improvement was to include colours corresponding to the species in the legend of the results figure. Initially, I thought providing the shapes corresponding to the species would be enough of an identifier, but adding the colours would make this more obvious, and match it to the layout of the exploratory figure. I was also informed my plotting functions were a little restrictive, as carrying out actions like changing the title of the graph would have to be done twice, through both the R markdown file and the functions plotting file. In order to counteract this I could remove the function, create a more flexible function that contained information such as the columns, labels, titles etc, or turned the plots into objects in order to save the figures more easily. I had redundancy in my code, where I had referred to my ‘plotting.R’ function file once more than was necessary, which is easy to fix by removing the second ‘plotting.R’ reference. I also didn’t specify shapes I wanted my scatterplot to have, I used (shape=species) to ensure they were coordinated with species, but to make it more reproducible, and easy to edit, I should specify these shapes.
+
 -   *What did you learn about writing code for other people?*
 
-### e) What are the main barriers for scientists to share their data and code, and what could be done to overcome them? (500-700 words)
-
--   Maitner et al. Code sharing increases citations, but remains uncommon. <https://doi.org/10.21203/rs.3.rs-3222221/v1>
--   Trisovic et al. A large-scale study on research code quality and execution. <https://rdcu.be/dZB7x>
--   A Rock-Star Researcher Spun a Web of Lies—and Nearly Got Away with It. <https://thewalrus.ca/a-rock-star-researcher-spun-a-web-of-lies-and-nearly-got-away-with-it/>
--   Gomes et al. Why don't we share data and code? Perceived barriers and benefits to public archiving practices <https://doi.org/10.1098/rspb.2022.1113>
+    After having someone else read my code and advise on it, I have realised the value of a second opinion. Code that I may not find confusing because I wrote it, and understood what I was writing, can easily be convoluted and require shortening. In addition, aesthetics are important to the readability of code, as well as how graphs are interpreted and understood. From reading my partners code I understood the importance of simple pipelines, with steps that don’t have overlapping function and no overwriting. In addition, I understood the importance of an organised folder, the renv::lock file, as well as the files containing functions and data made it very easy to run their code (and edit it if this was necessary). My partner also had a line of code specifying that if the user didn’t have the file, then one would be created for the future data that would be created to be stored in. This is something I never considered putting in my code, however, this is a fantastic backup in case the file was lost or not loaded, and would ensure the code ran smoothly by creating a new one. This is something I would consider putting in my code in the future, as it is important that when someone uses your code, if anything goes wrong, it can be fixed easily, in this instance, the back-up is already available.
